@@ -1,4 +1,4 @@
-.PHONY: help build up down restart logs clean test backend-logs kafka-logs
+.PHONY: help build up down restart logs clean test backend-logs kafka-logs frontend-logs
 
 # 기본 목표
 .DEFAULT_GOAL := help
@@ -13,6 +13,7 @@ help:
 	@echo "  make restart       - 모든 서비스 재시작"
 	@echo "  make logs          - 모든 서비스 로그 확인"
 	@echo "  make backend-logs  - 백엔드 로그만 확인"
+	@echo "  make frontend-logs - 프론트엔드 로그만 확인"
 	@echo "  make kafka-logs    - Kafka 로그만 확인"
 	@echo "  make clean         - 모든 컨테이너, 볼륨, 이미지 삭제"
 	@echo "  make test          - 백엔드 테스트 실행"
@@ -29,6 +30,7 @@ up:
 	docker-compose up -d
 	@echo ""
 	@echo "Services are starting..."
+	@echo "Frontend: http://localhost:3000"
 	@echo "Backend API: http://localhost:8080"
 	@echo "Kafka UI: http://localhost:8090"
 	@echo "Kafka Broker: localhost:9092"
@@ -63,6 +65,10 @@ kafka-logs:
 # Zookeeper 로그 확인
 zookeeper-logs:
 	docker-compose logs -f zookeeper
+
+# Frontend 로그 확인
+frontend-logs:
+	docker-compose logs -f frontend
 
 # 전체 클린업 (컨테이너, 볼륨, 네트워크 삭제)
 clean:

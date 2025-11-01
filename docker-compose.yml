@@ -101,19 +101,28 @@ services:
       retries: 3
       start_period: 10s
 
-  # Frontend 서비스 (나중에 추가)
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: kafka-monitor-frontend
-  #   depends_on:
-  #     - backend
-  #   ports:
-  #     - "3000:80"
-  #   networks:
-  #     - kafka-network
-  #   restart: unless-stopped
+  # Frontend 서비스
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
+    container_name: kafka-monitor-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    networks:
+      - kafka-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
 networks:
   kafka-network:

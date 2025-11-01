@@ -20,7 +20,13 @@ go-kafka-monitoring-dashboard/
 │       ├── consumer.go         # Consumer 기능
 │       ├── admin.go            # Topic 관리
 │       └── metrics.go          # 메트릭/모니터링
-└── frontend/                   # React 프론트엔드 (TODO)
+└── frontend/                   # React 프론트엔드
+    ├── src/
+    │   ├── components/         # React 컴포넌트
+    │   ├── services/           # API 서비스
+    │   └── App.jsx
+    ├── Dockerfile
+    └── package.json
 ```
 
 ## 주요 기능
@@ -52,7 +58,7 @@ go-kafka-monitoring-dashboard/
 
 - **Backend**: Go 1.21+, Gin, kafka-go, gorilla/websocket
 - **Infrastructure**: Docker, Docker Compose, Kafka 7.5.0, Zookeeper
-- **Frontend**: React 18, Vite (구현 예정)
+- **Frontend**: React 18, Vite, Tailwind CSS, Axios
 
 ## 필수 요구사항
 
@@ -82,6 +88,7 @@ make down
 ```
 
 ### 3. 서비스 접속
+- **Frontend Dashboard**: http://localhost:3000
 - **Backend API**: http://localhost:8080
 - **Kafka UI**: http://localhost:8090
 - **Kafka Broker**: localhost:9092
