@@ -1,0 +1,56 @@
+version: '3.8'
+
+# 개발 환경용 docker-compose 파일
+# 사용법: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  # Backend 개발 모드
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      # 소스 코드 마운트 (핫 리로드를 위해)
+      - ./backend:/app
+    environment:
+      KAFKA_BROKERS: kafka:29092
+      PORT: 8080
+      GIN_MODE: debug  # 개발 모드
+    command: >
+      sh -c "
+        if [ ! -f /app/main ]; then
+          go build -o main .
+        fi
+        go run main.go
+      "
+
+  # Kafka 개발 설정
+  kafka:
+    environment:
+      # 개발용 로그 레벨
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+      # 빠른 리밸런싱
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  # 추가 개발 도구들
+
+  # Kafka Manager (CMAK) - 선택적
+  kafka-manager:
+    image: hlebalbau/kafka-manager:stable
+    container_name: kafka-manager
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: "zookeeper:2181"
+      APPLICATION_SECRET: "random-secret"
+      KAFKA_MANAGER_AUTH_ENABLED: "false"
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    external: true
